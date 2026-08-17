@@ -2,17 +2,18 @@ import torch
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
 
-def get_model(num_classes: int = 10, pretrained: bool = True, num_channels: int = 3) -> nn.Module:
-    '''Function to get a ResNet18 model, optionally pretrained on ImageNet, 
-    and adapted for the specified number of classes and input channels.'''
-
-    weights = ResNet18_Weights.DEFAULT if pretrained else None
-    model = resnet18(weights=weights)
-    
-    # Adapt first layer if single-channel input (e.g., FashionMNIST).
-    if num_channels == 1:
-        model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        
-    # Replace the final fully connected layer.
-    model.fc = nn.Linear(model.fc.in_features, num_classes)
-    return model
+def get_model(architecture: str = 'resnet18', 
+              num_classes: int = 10, pretrained: bool = True) -> nn.Module:
+    '''Function to get the model architecture.
+    Args:
+        architecture: Model architecture to use. Currently only resnet18 is supported.
+        num_classes: Number of output classes for the model. Default is 10.
+        pretrained: Whether to use a pretrained model or not. Default is True.
+    '''
+    if architecture == 'resnet18':
+        weights = ResNet18_Weights.DEFAULT if pretrained else None
+        model = resnet18(weights=weights)
+        model.fc = nn.Linear(model.fc.in_features, num_classes)
+        return model
+    else:
+        raise ValueError(f'Unsupported architecture: {architecture}')
