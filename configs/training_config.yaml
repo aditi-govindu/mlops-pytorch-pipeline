@@ -1,10 +1,14 @@
-dataset: "CIFAR10" # Using 10 digits dataset for classification.
-data_dir: "./data"
-batch_size: 64
-num_epochs: 10
-learning_rate: 0.001
-num_classes: 10
-pretrained: true
-output_dir: "checkpoints"
-model_filename: "cifar10_model.pth"
-patience: 3 # Early stopping patience.
+model:
+  architecture: resnet18
+  num_classes: 10
+training:
+  epochs: 10
+  batch_size: 64
+  learning_rate: 0.001
+  early_stopping_patience: 4
+data:
+  dataset: cifar10
+  data_dir: ./data
+output:
+  checkpoint_dir: ./checkpoints
+  model_name: classifier_v1.pt
