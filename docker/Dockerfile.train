@@ -1,1 +1,18 @@
+# Stage 1: Base with dependencies
+FROM python:3.11-slim AS base
+WORKDIR /app
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+COPY requirements/train.txt .
+RUN pip install --no-cache-dir --default-timeout=1000 --retries 3 -r train.txt
+
+# Stage 2: Training runtime
+FROM base AS training
+WORKDIR /app
+
+COPY src/ ./src/
+COPY configs/ ./configs/
+
+ENTRYPOINT ["python", "src/train.py"]
