@@ -5,8 +5,8 @@ import torch
 import torch.nn.functional as F
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from PIL import Image
-from dataset import get_transforms
-from model import get_model
+from .dataset import get_transforms
+from .model import get_model
 
 app = FastAPI(title='CIFAR-10 PyTorch Model Serving API')
 
