@@ -1,0 +1,30 @@
+# Production image with trained model checkpoint
+FROM python:3.11-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Install dependencies
+COPY requirements/serve.txt .
+RUN pip install --no-cache-dir --default-timeout=1000 --retries 3 -r serve.txt
+
+# Copy application code
+COPY src/ ./src/
+
+# Create checkpoint directory and prepare for model
+RUN mkdir -p /app/checkpoints
+
+# Create non-root user
+RUN useradd -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1
+
+CMD ["uvicorn", "src.serve:app", "--host", "0.0.0.0", "--port", "8080"]
